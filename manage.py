@@ -3,7 +3,8 @@
 import os
 import sys
 from dotenv import load_dotenv
-from chatbot.services.product_service import add_product
+from chatbot.services.product_service import *
+from supermarket_chatbot.settings.base import MONGO_URI, DB_NAME
 
 
 load_dotenv()
@@ -19,7 +20,7 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
     # Uncomment the line below to add a product to the database
-    add_product("Test Product", "This is a test product", 9.99, "test_category")
+    initialize_product_collection()
     execute_from_command_line(sys.argv)
     
 
