@@ -1,19 +1,71 @@
-from product_service import *
+from chatbot.services.product_service import *
 
 initialize_product_collection()
-produit1 = {
-    "nom": "Pomme",
-    "prix": 0.5,
-    "description": "Pomme rouge délicieuse",
-    "categorie": "Fruits"
-}
 
-produit2 = {
-    "nom": "Pain",
-    "prix": 1.0,
-    "description": "Pain frais de la boulangerie",
-    "categorie": "Boulangerie"
-}
+product_list = [
+    {"nom": "Pain complet", "prix": 1.80, "description": "Pain complet bio 500g", "categorie": "Boulangerie", "quantite": 30},
+    {"nom": "Beurre doux", "prix": 2.10, "description": "Plaquette de beurre doux 250g", "categorie": "Produits laitiers", "quantite": 20},
+    {"nom": "Pâtes coquillettes", "prix": 0.90, "description": "Pâtes de blé dur 500g", "categorie": "Épicerie", "quantite": 100},
+    {"nom": "Riz basmati", "prix": 1.90, "description": "Riz basmati en sachet 1kg", "categorie": "Épicerie", "quantite": 80},
+    {"nom": "Tomates", "prix": 2.50, "description": "Tomates fraîches 1kg", "categorie": "Fruits et légumes", "quantite": 40},
+    {"nom": "Pommes Golden", "prix": 2.20, "description": "Pommes Golden 1kg", "categorie": "Fruits et légumes", "quantite": 60},
+    {"nom": "Poulet rôti", "prix": 7.90, "description": "Poulet rôti entier", "categorie": "Boucherie", "quantite": 25},
+    {"nom": "Yaourt nature", "prix": 1.60, "description": "Pack de 4 yaourts nature", "categorie": "Produits laitiers", "quantite": 50},
+    {"nom": "Jambon blanc", "prix": 2.50, "description": "4 tranches de jambon supérieur", "categorie": "Charcuterie", "quantite": 35},
+    {"nom": "Céréales chocolat", "prix": 3.40, "description": "Boîte de céréales au chocolat 375g", "categorie": "Petit déjeuner", "quantite": 40},
+    {"nom": "Savon liquide", "prix": 1.90, "description": "Savon pour les mains 300ml", "categorie": "Hygiène", "quantite": 30},
+    {"nom": "Dentifrice", "prix": 2.20, "description": "Dentifrice blanchissant 75ml", "categorie": "Hygiène", "quantite": 45},
+    {"nom": "Shampoing doux", "prix": 3.50, "description": "Shampoing cheveux normaux 250ml", "categorie": "Hygiène", "quantite": 25},
+    {"nom": "Eau minérale", "prix": 0.60, "description": "Bouteille d'eau 1,5L", "categorie": "Boissons", "quantite": 120},
+    {"nom": "Coca-Cola", "prix": 1.20, "description": "Canette de Coca-Cola 33cl", "categorie": "Boissons", "quantite": 80},
+    {"nom": "Jus d'orange", "prix": 2.50, "description": "Brique de jus d'orange 1L", "categorie": "Boissons", "quantite": 50},
+    {"nom": "Bière blonde", "prix": 1.40, "description": "Bouteille de bière blonde 25cl", "categorie": "Boissons", "quantite": 60},
+    {"nom": "Vin rouge", "prix": 6.90, "description": "Bouteille de vin rouge 75cl", "categorie": "Boissons", "quantite": 20},
+    {"nom": "Chips nature", "prix": 1.60, "description": "Sachet de chips nature 150g", "categorie": "Snacking", "quantite": 35},
+    {"nom": "Biscuits chocolat", "prix": 2.30, "description": "Paquet de biscuits fourrés au chocolat", "categorie": "Épicerie sucrée", "quantite": 45},
+    {"nom": "Sucre en poudre", "prix": 1.00, "description": "Paquet de sucre blanc 1kg", "categorie": "Épicerie", "quantite": 70},
+    {"nom": "Farine de blé", "prix": 0.95, "description": "Farine type 55 1kg", "categorie": "Épicerie", "quantite": 90},
+    {"nom": "Œufs plein air", "prix": 2.80, "description": "Boîte de 6 œufs plein air", "categorie": "Produits frais", "quantite": 40},
+    {"nom": "Fromage râpé", "prix": 2.10, "description": "Sachet de 200g de fromage râpé", "categorie": "Produits laitiers", "quantite": 30},
+    {"nom": "Mozzarella", "prix": 1.50, "description": "Boule de mozzarella 125g", "categorie": "Produits laitiers", "quantite": 35},
+    {"nom": "Pizza surgelée", "prix": 3.90, "description": "Pizza 4 fromages surgelée", "categorie": "Surgelés", "quantite": 25},
+    {"nom": "Poisson pané", "prix": 4.20, "description": "Boîte de 10 bâtonnets de poisson", "categorie": "Surgelés", "quantite": 20},
+    {"nom": "Petits pois carottes", "prix": 1.00, "description": "Boîte de conserve 400g", "categorie": "Épicerie salée", "quantite": 50},
+    {"nom": "Maïs doux", "prix": 1.10, "description": "Petite boîte de maïs en grains", "categorie": "Épicerie salée", "quantite": 45},
+    {"nom": "Cornichons", "prix": 1.90, "description": "Bocal de cornichons 200g", "categorie": "Épicerie salée", "quantite": 30},
+    {"nom": "Mayonnaise", "prix": 2.00, "description": "Pot de mayonnaise 250ml", "categorie": "Condiments", "quantite": 20},
+    {"nom": "Moutarde de Dijon", "prix": 1.50, "description": "Pot de moutarde 200g", "categorie": "Condiments", "quantite": 25},
+    {"nom": "Savon de Marseille", "prix": 2.50, "description": "Pain de savon 250g", "categorie": "Hygiène", "quantite": 40},
+    {"nom": "Gel douche", "prix": 3.20, "description": "Flacon de gel douche 300ml", "categorie": "Hygiène", "quantite": 35},
+    {"nom": "Essuie-tout", "prix": 2.30, "description": "Rouleau d'essuie-tout", "categorie": "Entretien", "quantite": 45},
+    {"nom": "Papier toilette", "prix": 4.90, "description": "Pack de 6 rouleaux", "categorie": "Entretien", "quantite": 60},
+    {"nom": "Liquide vaisselle", "prix": 1.70, "description": "Flacon 500ml", "categorie": "Entretien", "quantite": 50},
+    {"nom": "Lessive liquide", "prix": 6.50, "description": "Bouteille 2L pour 30 lavages", "categorie": "Entretien", "quantite": 25},
+    {"nom": "Tablette lave-vaisselle", "prix": 4.50, "description": "Boîte de 20 tablettes", "categorie": "Entretien", "quantite": 20},
+    {"nom": "Sacs poubelle", "prix": 3.00, "description": "Rouleau de 20 sacs", "categorie": "Entretien", "quantite": 40},
+    {"nom": "Epinards frais", "prix": 2.80, "description": "Sachet de 500g", "categorie": "Fruits et légumes", "quantite": 30},
+    {"nom": "Carottes", "prix": 1.50, "description": "Sachet de carottes 1kg", "categorie": "Fruits et légumes", "quantite": 50},
+    {"nom": "Oignons jaunes", "prix": 1.20, "description": "Filet de 1kg", "categorie": "Fruits et légumes", "quantite": 40},
+    {"nom": "Poivrons rouges", "prix": 3.00, "description": "Lot de 2 poivrons rouges", "categorie": "Fruits et légumes", "quantite": 35},
+    {"nom": "Courgettes", "prix": 2.60, "description": "Courgettes fraîches 1kg", "categorie": "Fruits et légumes", "quantite": 45},
+    {"nom": "Pommes de terre", "prix": 1.80, "description": "Filet de pommes de terre 2kg", "categorie": "Fruits et légumes", "quantite": 50},
+    {"nom": "Chocolat noir", "prix": 1.90, "description": "Tablette de chocolat 100g", "categorie": "Épicerie sucrée", "quantite": 40},
+    {"nom": "Confiture de fraises", "prix": 2.70, "description": "Pot de confiture 370g", "categorie": "Épicerie sucrée", "quantite": 30},
+    {"nom": "Miel", "prix": 3.50, "description": "Pot de miel 250g", "categorie": "Épicerie sucrée", "quantite": 25},
+    {"nom": "Café moulu", "prix": 4.00, "description": "Paquet de café moulu 250g", "categorie": "Petit déjeuner", "quantite": 35},
+    {"nom": "Thé vert", "prix": 2.40, "description": "Boîte de sachets de thé vert", "categorie": "Petit déjeuner", "quantite": 30},
+    {"nom": "Cacao en poudre", "prix": 2.20, "description": "Boîte de cacao en poudre 250g", "categorie": "Petit déjeuner", "quantite": 40},
+    {"nom": "Pesto basilic", "prix": 3.80, "description": "Pot de pesto au basilic 190g", "categorie": "Condiments", "quantite": 20},
+    {"nom": "Sauce tomate", "prix": 1.70, "description": "Bocal de sauce tomate 400g", "categorie": "Condiments", "quantite": 50},
+    {"nom": "Ketchup", "prix": 2.00, "description": "Flacon de ketchup 500ml", "categorie": "Condiments", "quantite": 45},
+    {"nom": "Céréales muesli", "prix": 3.00, "description": "Boîte de muesli 500g", "categorie": "Petit déjeuner", "quantite": 30},
+    {"nom": "Granola", "prix": 3.50, "description": "Paquet de granola 400g", "categorie": "Petit déjeuner", "quantite": 25},
+    {"nom": "Pâte à tartiner", "prix": 2.80, "description": "Pot de pâte à tartiner chocolat-noisette 400g", "categorie": "Épicerie sucrée", "quantite": 40},
+    {"nom": "Biscuits sablés", "prix": 1.90, "description": "Paquet de biscuits sablés 200g", "categorie": "Épicerie sucrée", "quantite": 35},
+    {"nom": "Gâteaux apéritif", "prix": 2.50, "description": "Sachet de gâteaux apéritif salés 150g", "categorie": "Snacking", "quantite": 30},
+    {"nom": "Barres chocolatées", "prix": 1.50, "description": "Boîte de barres chocolatées individuelles", "categorie": "Snacking", "quantite": 50},
+    {"nom": "Popcorn au caramel", "prix": 2.20, "description": "Sachet de popcorn au caramel 100g", "categorie": "Snacking", "quantite": 20},
+]
 
-add_product(produit1)
-add_product(produit2)
+
+

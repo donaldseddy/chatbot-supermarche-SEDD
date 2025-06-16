@@ -21,40 +21,27 @@ def get_all_products():
     finally:
         mongo.close_connection()
 
-def get_product_by_id(product_id):
-    mongo = MongoFactory.create(product_schema)
 
+
+
+def add_product(product_data):
+    '''permet d'ajouter un produit à la collection MongoDB test si cest une liste de dictionnaires ou un seul dictionnaire'''
+    mongo = MongoFactory.create('products')
     try:
-        product = mongo.read_one_document({"_id": product_id})
-        if product:
-            logger.info(f"Produit trouvé: {product['name']}")
-            return product
+        if isinstance(product_data, list):
+            result = mongo.create_many_documents(product_data)
+            logger.info(f"{len(result)} produits ajoutés avec succès.")
         else:
-            logger.warning(f"Aucun produit trouvé avec l'ID: {product_id}")
-            return None
+            result = mongo.create_one_document(product_data)
+            logger.info("Produit ajouté avec succès.")
+        return result
 
     except Exception as e:
-        logger.exception("Erreur lors de la récupération du produit")
+        logger.exception("Erreur lors de l'ajout du produit")
         return None
 
     finally:
         mongo.close_connection()
-
-
-def add_product(product_data):
-    mongo = MongoFactory.create('products')
-
-    try:
-        result = mongo.create_collection(product_data, product_schema)
-        if result:
-            logger.info(f"Produit ajouté avec succès: {product_data['nom']}")
-            return result
-        else:
-            logger.error("Échec de l'ajout du produit")
-            return None
-    except Exception as e:
-        logger.exception("Erreur lors de l'ajout du produit")
-        return None
     
 
 def initialize_product_collection():

@@ -3,6 +3,8 @@ from pymongo.database import Database
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson import ObjectId
+from jsonschema import validate, ValidationError
+
 
 class MongoManager:
     def __init__(self, uri: str, db_name: str=None, coll_name: str=None):
@@ -47,23 +49,42 @@ class MongoManager:
         if self.__db is None:
             raise Exception("Database not initialized. Please provide a database name.")
         self.__collection = self.__db[coll_name]
+        print(f"Collection set to '{coll_name}'")
 
-    def create_collection(self, coll_name: str, schema: dict):
-        if self.__db is None:
-            raise Exception("Database not initialized. Please provide a database name.")
-        try:
-            self.__db.create_collection(coll_name, validator={"$jsonSchema": schema})
-            self.collection = coll_name
-        except Exception as e:
-            raise Exception("Unable to create collection due to the following error: ", e)
 
-        
     def list_databases(self):
         try:
             return self.__client.list_database_names()
         except Exception as e:
             raise Exception("Unable to list databases due to the following error: ", e)
+    
+
+    def create_collection(self, coll_name: str, schema: dict = None):
+        if self.__db is None:
+            raise Exception("Database not initialized. Please provide a database name.")
         
+        if coll_name in self.__db.list_collection_names():
+            print(f"La collection '{coll_name}' existe déjà. Aucune création nécessaire.")
+            self.__collection = self.__db[coll_name]
+            return self.__collection
+
+        try:
+            if schema:
+                self.__collection = self.__db.create_collection(
+                    coll_name,
+                    validator={"$jsonSchema": schema}
+                )
+            else:
+                self.__collection = self.__db.create_collection(coll_name)
+
+            print(f"Collection '{coll_name}' créée avec succès.")
+            return self.__collection
+
+        except Exception as e:
+            raise Exception(f"Impossible de créer la collection à cause de l'erreur suivante : {e}")
+
+
+            
     def list_collections(self):
         if self.__db is None:
             raise Exception("Database not initialized. Please provide a database name.")
@@ -74,9 +95,14 @@ class MongoManager:
         
 
 
-    def create_one_document(self, document):
+    def create_one_document(self, document, schema: dict = None):
         if self.__collection is None:
             raise Exception("Collection not initialized. Please provide a collection name.")
+        if schema:
+            try:
+                validate(instance=document, schema=schema)
+            except ValidationError as e:
+                raise Exception(f"Document validation failed: {e.message}")
         try:
             result = self.__collection.insert_one(document)
             return result.inserted_id
@@ -84,14 +110,21 @@ class MongoManager:
             raise Exception("Unable to create document due to the following error: ", e)
         
 
-    def create_many_documents(self, documents):
+    def create_many_documents(self, documents, schema: dict = None):
         if self.__collection is None:
             raise Exception("Collection not initialized. Please provide a collection name.")
+        if schema:
+            for document in documents:
+                try:
+                    validate(instance=document, schema=schema)
+                except ValidationError as e:
+                    raise Exception(f"Document validation failed: {e.message}")
         try:
             result = self.__collection.insert_many(documents)
             return result.inserted_ids
         except Exception as e:
             raise Exception("Unable to create documents due to the following error: ", e)
+        
         
     def update_one_document(self, query: dict, new_values: dict):
         try:
