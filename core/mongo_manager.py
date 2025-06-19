@@ -126,17 +126,27 @@ class MongoManager:
             raise Exception("Unable to create documents due to the following error: ", e)
         
         
-    def update_one_document(self, query: dict, new_values: dict):
+    def update_document_by_id(self, id, new_values: dict):
+        """
+        Met à jour un document via son identifiant (_id).
+        :param id: str ou ObjectId – l'identifiant MongoDB du document à mettre à jour
+        :param new_values: dict – les nouvelles valeurs à mettre à jour dans le document
+        :return: dict – le résultat de la mise à jour
+        """
+        if self.__collection is None:
+            raise Exception("Collection not initialized. Please provide a collection name.")
+        
         try:
-            update_result = self.collection.update_one(query, new_values)
+            object_id = ObjectId(id) if not isinstance(id, ObjectId) else id
+            update_result = self.collection.update_one({"_id": object_id}, {"$set": new_values})
             return {
-            "acknowledged": update_result.acknowledged,
-            "insertedId": update_result.upserted_id,
-            "matchedCount": update_result.matched_count,
-            "modifiedCount": update_result.modified_count,
+                "acknowledged": update_result.acknowledged,
+                "matchedCount": update_result.matched_count,
+                "modifiedCount": update_result.modified_count,
             }
         except Exception as e:
             raise Exception("Unable to update the document due to the following error:", e)
+    
 
     def update_many_documents(self, query: dict, new_values: dict):
         try:
@@ -151,21 +161,49 @@ class MongoManager:
             raise Exception("Unable to update the documents due to the following error:", e)
         
 
-    def read_one_document(self, query: dict):
+    def get_all_documents(self):
         try:
-            document = self.collection.find_one(query)
-            return document
-        except Exception as e:
-            raise Exception("Unable to read the document due to the following error:", e)
-        
-    def read_many_documents(self, query: dict):
-        try:
-            documents = self.collection.find(query)
+            documents = self.collection.find()
             return list(documents)
         except Exception as e:
-            raise Exception("Unable to read the documents due to the following error:", e)
+            raise Exception("Unable to retrieve all documents due to the following error:", e)
         
-    def read_sorted_documents(self, query: dict, sort_by: str, order: int):
+    
+    def get_document_by_id(self, id):
+        """
+        Récupère un document via son identifiant (_id).
+        :param id: str ou ObjectId – l'identifiant MongoDB du document à récupérer
+        :return: dict – le document trouvé ou None si non trouvé
+        """
+        try:
+            object_id = ObjectId(id) if not isinstance(id, ObjectId) else id
+            document = self.collection.find_one({"_id": object_id})
+            return document
+        except Exception as e:
+            raise Exception("Unable to retrieve the document due to the following error:", e)
+        
+
+
+    def get_documents_with_pagination(self, page: int = 1, limit: int = 25):
+        """
+        Récupère les documents avec pagination.
+        :param page: int – numéro de la page (1-indexé)
+        :param limit: int – nombre de documents par page
+        :return: list de documents
+        """
+        if page < 1 or limit < 1:
+            raise ValueError("Page and limit must be greater than 0.")
+        
+        try:
+            skip = (page - 1) * limit
+            documents = self.collection.find().skip(skip).limit(limit)
+            return list(documents)
+        except Exception as e:
+            raise Exception("Unable to retrieve documents with pagination due to the following error:", e)
+        
+
+        
+    def get_sorted_documents(self, query: dict, sort_by: str, order: int):
         try:
             documents = self.collection.find(query).sort(sort_by, order)
             return list(documents)
@@ -173,24 +211,23 @@ class MongoManager:
             raise Exception("Unable to read the sorted documents due to the following error:", e)
         
 
-    from bson import ObjectId
+    
 
-    def delete_one_document(self, id):
+    def delete_document_by_id(self, id):
         """
         Supprime un document via son identifiant (_id).
         :param id: str ou ObjectId – l'identifiant MongoDB du document à supprimer
-        :return: dict – résultat de l'opération
+        :return: dict – le résultat de la suppression
         """
         try:
             object_id = ObjectId(id) if not isinstance(id, ObjectId) else id
-            delete_result = self.__collection.delete_one({"_id": object_id})
+            delete_result = self.collection.delete_one({"_id": object_id})
             return {
                 "acknowledged": delete_result.acknowledged,
                 "deletedCount": delete_result.deleted_count,
             }
         except Exception as e:
-            raise RuntimeError(f"Unable to delete the document: {e}")
-
+            raise Exception("Unable to delete the document due to the following error:", e)
         
     
     def delete_many_documents(self, query: dict):
@@ -226,3 +263,6 @@ class MongoManager:
 
         except Exception as e:
             raise RuntimeError(f"Unable to retrieve documents from collection '{collection_name}': {e}")
+        
+
+    
