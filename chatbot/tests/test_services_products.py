@@ -17,7 +17,8 @@ class ProductServiceTests(TestCase):
             "quantite": 20
         }
         inserted = add_product(self.product_data)
-        self.inserted_id = str(inserted.inserted_ids[0])
+        self.inserted_id = str(inserted) 
+
 
     def tearDown(self):
         if hasattr(self, 'inserted_id'):
@@ -45,12 +46,22 @@ class ProductServiceTests(TestCase):
         products = get_products_by_pagination(page=1, limit=10)
         self.assertIsNotNone(products)
         self.assertIsInstance(products, list)
+        self.assertGreater(len(products), 0)  # Vérifie qu'il y a des produits
 
     def test_get_products_by_category(self):
         category = "Produits laitiers"
+
+        # Optionnel : afficher le produit inséré pour vérifier
+        product = get_product_by_id(self.inserted_id)
+        print("Produit inséré :", product)
+
         products = get_products_by_category(category)
-        self.assertIsNotNone(products)
-        self.assertIsInstance(products, list)
+        print(f"Produits trouvés pour la catégorie '{category}':", products)
+
+        self.assertIsNotNone(products, "La fonction a retourné None au lieu d'une liste")
+        self.assertIsInstance(products, list, "La fonction ne retourne pas une liste")
+        self.assertGreater(len(products), 0, "Aucun produit trouvé dans la catégorie")
+
     
 
     def test_add_product(self):
@@ -61,17 +72,14 @@ class ProductServiceTests(TestCase):
             "categorie": "Produits laitiers",
             "quantite": 10
         }
-        inserted = add_product(new_product)
-        self.assertIsNotNone(inserted)
-        self.assertTrue(isinstance(inserted.inserted_ids, list))
-        self.assertEqual(len(inserted.inserted_ids), 1)
+        inserted_id = add_product(new_product)  # ObjectId directement
+        self.assertIsNotNone(inserted_id)
 
         # Vérifie que le produit a été ajouté
-        product = get_product_by_id(str(inserted.inserted_ids[0]))
+        product = get_product_by_id(str(inserted_id))
         self.assertIsNotNone(product)
         self.assertEqual(product['nom'], new_product['nom'])
-
-    
+        
     def test_delete_product_by_id(self):
         delete_result = delete_product_by_id(self.inserted_id)
         self.assertIsNotNone(delete_result)

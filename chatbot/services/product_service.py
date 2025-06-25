@@ -59,8 +59,9 @@ def get_products_by_category(category):
     '''permet de récupérer les produits par catégorie de la collection MongoDB test'''
     mongo = MongoFactory.create('products')
     try:
+        filter_query = {"categorie": {"$regex": f"^{category}$", "$options": "i"}}
         products = mongo.get_sorted_documents(
-            filter_query={"categorie": category},
+            filter_query=filter_query,
             sort_field="nom",
             sort_order=1
         )
@@ -75,7 +76,6 @@ def get_products_by_category(category):
     
     finally:
         mongo.close_connection()
-
 
 
 
