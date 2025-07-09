@@ -151,3 +151,33 @@ def update_product_by_id(product_id, update_data):
 
     finally:
         mongo.close_connection()
+
+
+
+def search_products(query):    
+    '''permet de rechercher des produits par nom ou description dans la collection MongoDB'''
+    mongo = MongoFactory.create('products')
+    try:
+        filter_query = {
+            "$or": [
+                {"nom": {"$regex": query, "$options": "i"}},
+                {"description": {"$regex": query, "$options": "i"}}
+            ]
+        }
+        products = mongo.get_sorted_documents(
+            filter_query=filter_query,
+            sort_field="nom",
+            sort_order=1
+        )
+        if products:
+            logger.info(f"{len(products)} produits trouvés pour la requête '{query}'.")
+        else:
+            logger.warning(f"Aucun produit trouvé pour la requête '{query}'.")
+        return products
+
+    except Exception as e:
+        logger.exception("Erreur lors de la recherche de produits")
+        return None
+
+    finally:
+        mongo.close_connection()

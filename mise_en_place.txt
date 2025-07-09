@@ -1,0 +1,91 @@
+#########################################
+# ✔️ Checklist Projet Supermarket Chatbot
+#########################################
+
+-------------------------------
+🔧 Backend : Django + MongoDB
+-------------------------------
+
+1️⃣ Installation de Django
+   -> pip install django
+
+2️⃣ Gestion des variables d'environnement
+   -> pip install python-decouple
+   - Création d’un fichier .env
+   - Segmentation des settings :
+       - base.py (commun)
+       - local.py (développement)
+       - production.py (production)
+   - Chargement des variables avec decouple :
+       from decouple import config
+
+3️⃣ Installation de MongoDB avec pymongo
+   -> python -m pip install "pymongo[srv]"
+
+4️⃣ Installation de MongoEngine
+   -> pip install mongoengine
+   - Connexion à MongoDB avec MongoEngine dans base.py ou un fichier db.py dédié
+
+5️⃣ Création du projet Django
+   -> django-admin startproject supermarket_chatbot .
+
+6️⃣ Architecture des settings
+   -> base.py contient :
+      - SECRET_KEY
+      - DEBUG
+      - ALLOWED_HOSTS
+      - DATABASES (via MongoEngine)
+      - LOGGING (paramétrage des logs)
+      - INSTALLED_APPS
+      - MIDDLEWARE commun
+   -> local.py et production.py héritent de base.py
+
+7️⃣ Installation de Django Rest Framework
+   -> pip install djangorestframework
+   - Ajout de 'rest_framework' dans INSTALLED_APPS
+
+8️⃣ Création de l’application chatbot
+   -> python manage.py startapp chatbot
+
+   - 🔸 Implémentation du modèle Mongo :
+       - mongo_schema.py : définition des collections (via mongoengine.Document)
+   - 🔸 Encapsulation :
+       - mongo_manager.py : gestion CRUD basique
+       - mongo_factory.py : gestion de l'initialisation des managers
+   - 🔸 Implémentation des services métiers :
+       - Exemple : product_service.py, order_service.py, user_service.py
+   - 🔸 Ajout de logs dans les services
+   - 🔸 Tests unitaires des services avec pytest ou unittest
+
+9️⃣ Mise en place de l’intégration continue (CI)
+   -> GitHub Actions :
+       - Tests automatiques à chaque push
+       - Vérification du linting (flake8, black)
+       - Déploiement conditionnel si besoin
+
+🔟 Gestion des routes Django (API)
+   - urls.py général
+   - urls.py spécifique pour l’app chatbot
+   - Liaison des routes aux services
+
+-------------------------------
+🎨 Frontend : Next.js + React
+-------------------------------
+
+1️⃣ Déploiement du frontend avec Next.js
+   -> npx create-next-app frontend
+
+2️⃣ Installation de TailwindCSS pour le style :
+   -> npm install -D tailwindcss postcss autoprefixer
+   -> npx tailwindcss init -p
+
+3️⃣ Structure Frontend :
+   - /pages : Pages (Ex : products.js, orders.js, dashboard.js)
+   - /components : Composants (Navbar, ProductCard, etc.)
+   - /services : Gestion des appels API avec axios
+   - /utils : Fonctions utilitaires
+
+4️⃣ Connexion au backend Django API :
+   - via axios dans services/productService.js :
+   ```js
+   const API_URL = process.env.NEXT_PUBLIC_API_URL;

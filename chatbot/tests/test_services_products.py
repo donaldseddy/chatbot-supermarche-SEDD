@@ -89,3 +89,11 @@ class ProductServiceTests(TestCase):
         # Vérifie qu'il n'existe plus
         product = get_product_by_id(self.inserted_id)
         self.assertIsNone(product)
+
+
+    def test_search_products(self):
+        query = "Lait"
+        products = search_products(query)
+        self.assertIsNotNone(products)
+        self.assertIsInstance(products, list)
+        self.assertGreater(len(products), 0)
